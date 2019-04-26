@@ -1,57 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import faker from 'faker'
-import CommentDetail from './CommentDetail'
-import ApprovalCard from './ApprovalCard'
+import SeasonDisplay from './SeasonDisplay'
+import Spinner from './Spinner'
 
 
-function App() {
-  return (
-    <div className="ui container comments" >
+class App extends React.Component {
 
-      <ApprovalCard>
-        <div>
-          <h4>
-            Are you sure you want to do this?
-          </h4>
-        </div>
+  state = { lat: null, errorMessage: '' };
 
-      </ApprovalCard>
+  componentDidMount() {
 
-      <ApprovalCard>
-        <CommentDetail
-          author="Sam"
-          timeAgo="Today at 4:45PM"
-          avatar={faker.image.avatar()}
-          comment="Hello"
-        />
-      </ApprovalCard>
+    window.navigator.geolocation.getCurrentPosition(
+      position => this.setState({ lat: position.coords.latitude }),
+      err => this.setState({ errorMessage: err.message })
+    );
 
-      <ApprovalCard>
-        <CommentDetail
-          author="Alex"
-          timeAgo="Today at 2:00AM"
-          avatar={faker.image.avatar()}
-          comment="World"
-        />
-      </ApprovalCard>
+  }
 
-      <ApprovalCard>
-        <CommentDetail
-          author="Jane"
-          timeAgo="Yesterday at 5:00PM"
-          avatar={faker.image.avatar()}
-          comment="AAAA"
-        />
-      </ApprovalCard>
+  componentDidUpdate() {
+    console.log('My component was just updated - it rendered!');
+  }
+
+  
+  render() {
+    if (this.state.errorMessage && !this.state.lat) {
+      return <div> Error: {this.state.errorMessage}</div>
+    }
+
+    if (!this.state.errorMessage && this.state.lat) {
+      return <SeasonDisplay lat={this.state.lat} />
+    }
+
+    return <Spinner />
+  };
 
 
-    </div>
-
-
-
-  );
-}
+};
 
 export default App;
